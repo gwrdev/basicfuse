@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="@artifactName@-features-@applicationVersion@"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0">
+
+  <repository>mvn:org.apache.camel.karaf/apache-camel/2.17.0.redhat-630187/xml/features</repository>
+
+  <feature name="workshop1-feature" description="Workshop 1 feature" version="1.0.0-SNAPSHOT">
+
+    <feature version="2.17.0.redhat-630187">camel-blueprint</feature>
+    <feature version="2.17.0.redhat-630187">camel-core</feature>
+    <feature version="2.17.0.redhat-630187">camel-restlet</feature>
+    <feature version="2.17.0.redhat-630187">camel-http</feature>
+    <feature version="5.11.0.redhat-630187">activemq-camel</feature>
+    <feature version="1.2.0.redhat-630187">mq-fabric</feature>
+
+    <bundle>mvn:org.example/fuse-workshop/1.0.0-SNAPSHOT</bundle>
+  </feature>
+
+</features>
