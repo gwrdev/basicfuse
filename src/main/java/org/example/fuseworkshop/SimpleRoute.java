@@ -30,10 +30,11 @@ public class SimpleRoute extends RouteBuilder {
             .post("/").consumes("text/plain")
             .route().routeId("restIn")
                 .to("activemq:queue:submission")
+                .setExchangePattern(ExchangePattern.InOnly)
                 .setHeader(HTTP_RESPONSE_CODE, constant(200));
 
-        from("activemq:queue:submission").routeId("restPRoc")
-                .log("s")
+        from("activemq:queue:submission").routeId("restProc")
+                .log("PDF Taken from Queue")
                 .convertBodyTo(String.class)
                 .to("pdf:create")
                 .setHeader(FILE_NAME, constant ("test-${date:now:yyyyMMdd-HHmmss}.pdf"))
