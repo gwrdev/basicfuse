@@ -10,10 +10,6 @@
 
     <feature version="2.17.0.redhat-630187">camel-blueprint</feature>
     <feature version="2.17.0.redhat-630187">camel-core</feature>
-    <feature version="2.17.0.redhat-630187">camel-restlet</feature>
-    <feature version="2.17.0.redhat-630187">camel-http</feature>
-    <feature version="5.11.0.redhat-630187">activemq-camel</feature>
-    <feature version="1.2.0.redhat-630187">mq-fabric</feature>
 
     <bundle>mvn:org.example/fuse-workshop/1.0.0-SNAPSHOT</bundle>
   </feature>
