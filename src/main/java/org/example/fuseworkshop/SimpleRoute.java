@@ -12,8 +12,8 @@ public class SimpleRoute extends RouteBuilder {
     private String name;
 
     @Override public void configure() throws Exception {
-        from("timer://foo?period=5000").routeId("simpleRoute")
-                .setBody().constant("Goodbye "+ name)
+        from("timer://foo?period=15000").routeId("simpleRoute")
+                .setBody().constant("Goodbye AAA "+ name)
                 .log(">>> ${body}")
                 ;
         from("file://input?include=.*\\.txt").routeId("fileProc")
@@ -28,26 +28,55 @@ public class SimpleRoute extends RouteBuilder {
                 .bindingMode(RestBindingMode.off);
 
         rest("/submission")
-            .post("/new").consumes("text/plain")
-            .to("direct:restNew")
             .post("/test").consumes("text/plain")
-            .to("direct:restTest");
+            .to("direct:restTest")
+            .post("/async").consumes("text/plain")
+            .to("direct:restAsync")
+            .post("/sync").consumes("text/plain")
+            .to("direct:restSync")
+            ;
 
-	from("direct:restNew").routeId("restNew")
-		.log("Rest call to New")
-                .to(ExchangePattern.InOnly, "activemq:queue:submission");
 	from("direct:restTest").routeId("restTest")
 		.log("Rest call to Test")
-		.setBody().simple("Returning ${body}");
+		.setBody().simple("Test Success")
+		.setHeader(HTTP_RESPONSE_CODE, constant(200));
 
-        from("activemq:queue:submission").routeId("restFromQueue")
-                .log("PDF Taken from Queue")
+	from("direct:restAsync").routeId("restAsync")
+		.log("Rest call to Async-In")
+                .to(ExchangePattern.InOnly, "activemq:queue:async")
+		.log("Rest call to Async-Out")
+		.setBody().simple("File Submitted")
+                .setHeader(HTTP_RESPONSE_CODE, constant(200));
+
+
+	from("direct:restSync").routeId("restSync")
+		.log("Rest call to Sync-In")
+                .to(ExchangePattern.InOut, "activemq:queue:sync")
+		.log("Rest call to Sync-Out")
+		//.setBody().simple("File Submitted")
+                .setHeader(HTTP_RESPONSE_CODE, constant(200));
+
+
+        from("activemq:queue:async?disableReplyTo=true").routeId("restAsyncQueue")
+                .log("PDF Taken from Async Queue-In")
                 .convertBodyTo(String.class)
-                .to("pdf:create")
+                //.to("pdf:create")
+		.log("PDF Taken from Async Queue-After PDF")
                 //.setHeader(FILE_NAME, constant ("test-${date:now:yyyyMMdd-HHmmss}.pdf"))
 		.setHeader(FILE_NAME, constant ("test.pdf"))
                 .to("file://output")
-          ;
+		.log("PDF Taken from Async Queue-After File");
+
+        from("activemq:queue:sync").routeId("restSyncQueue")
+                .log("PDF Taken from Sync Queue-In")
+                .convertBodyTo(String.class)
+                //.to("pdf:create")
+		.log("PDF Taken from Sync Queue-After PDF")
+                //.setHeader(FILE_NAME, constant ("test-${date:now:yyyyMMdd-HHmmss}.pdf"))
+		.setHeader(FILE_NAME, constant ("test.pdf"))
+                .to("file://output")
+		.setBody().simple("File Saved")
+		.log("PDF Taken from Sync Queue-After File");
     }
 
     public void setName(String name) {
